@@ -43,3 +43,10 @@ server/prisma/*.db-journal
 *.local
 .cache/
 .turbo/
+
+# Terraform (secrets + local state)
+infra/*.tfvars
+!infra/terraform.tfvars.example
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*

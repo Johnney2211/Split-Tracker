@@ -1,0 +1,11 @@
+# Copy this file to terraform.tfvars and fill in real values.
+# terraform.tfvars is gitignored — never commit secrets.
+
+vercel_api_token = "vercel_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+neon_api_key     = "napi_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+project_name     = "housemate-split"
+github_repo      = "your-github-username/Split-Tracker"
+neon_region      = "aws-ap-southeast-2"
+
+# Render backend URL (used as VITE_API_URL on the Vercel project)
+vite_api_url = "https://split-tracker-0uxz.onrender.com"

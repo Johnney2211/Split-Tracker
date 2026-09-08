@@ -93,8 +93,69 @@ Suggested placements:
 /
 ├── client/     React + TypeScript + Vite + Tailwind
 ├── server/     Express + TypeScript + Prisma + PostgreSQL
+├── infra/      Terraform (Vercel frontend + Neon Postgres)
 └── package.json
 ```
+
+## Infrastructure (Terraform)
+
+Terraform under `/infra` manages:
+
+| Managed by Terraform | Still manual (not Terraform-managed) |
+| --- | --- |
+| Vercel frontend project (Vite app in `client/`, GitHub auto-deploys) | **Render backend** at `https://split-tracker-0uxz.onrender.com` |
+| Neon PostgreSQL project + connection string | Wiring `DATABASE_URL` / `JWT_SECRET` (and friends) into Render |
+| `VITE_API_URL` on the Vercel project (defaults to the Render URL above) | Re-creating or reconfiguring the Render web service itself |
+
+### Apply from `/infra`
+
+1. Copy the example vars file and fill in real tokens (never commit `terraform.tfvars`):
+
+   ```bash
+   cd infra
+   cp terraform.tfvars.example terraform.tfvars
+   ```
+
+2. Initialize, preview, and apply:
+
+   ```bash
+   terraform init
+   terraform plan
+   terraform apply
+   ```
+
+3. After apply, read outputs:
+
+   ```bash
+   terraform output vercel_project_url
+   terraform output -raw neon_connection_string
+   ```
+
+Use the Neon connection string as `DATABASE_URL` on Render (see below). `VITE_API_URL` on Vercel already defaults to `https://split-tracker-0uxz.onrender.com`; change `vite_api_url` in `terraform.tfvars` and re-apply only if the backend URL changes.
+
+### Redeploy the backend on Render (manual)
+
+The Express API is **not** managed by Terraform. To create or redeploy it on Render:
+
+1. In the [Render dashboard](https://dashboard.render.com/), create a **Web Service** and connect the same GitHub repo used for this project.
+2. Configure the service for the monorepo API:
+   - **Root Directory:** leave blank (repo root), so npm workspaces resolve correctly
+   - **Runtime:** Node
+   - **Build Command:** `npm install && npm run prisma:generate -w server && npm run build -w server`
+   - **Start Command:** `npm run start -w server`
+3. Set environment variables on the Render service:
+   - `DATABASE_URL` — copy from `terraform output -raw neon_connection_string` (Neon, Terraform-managed)
+   - `JWT_SECRET` — a long random secret (not stored in Terraform)
+   - `PORT` — Render usually injects this; if you set it, match what the service expects (the app defaults to `3001` locally)
+   - Any other server vars from `server/.env.example` as needed
+4. On first deploy (or after schema changes), run migrations against Neon — e.g. from a one-off Render shell / local machine with the same `DATABASE_URL`:
+
+   ```bash
+   npm run prisma:migrate -w server
+   ```
+
+   For production-style deploys, prefer `npx prisma migrate deploy` in the `server` workspace once migrations are committed.
+5. Trigger a deploy (push to the connected branch, or **Manual Deploy** in Render). Confirm health at `https://split-tracker-0uxz.onrender.com/api/v1/health`.
 
 ## Future Work
 
