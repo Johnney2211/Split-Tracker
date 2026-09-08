@@ -1,3 +1,5 @@
+import { API_V1_BASE } from './config';
+
 export async function parseApiError(response: Response): Promise<string> {
   try {
     const data = (await response.json()) as { error?: string };
@@ -22,7 +24,9 @@ export async function apiFetch(
     nextHeaders.set('Content-Type', 'application/json');
   }
 
-  return fetch(`/api/v1${path}`, {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+
+  return fetch(`${API_V1_BASE}${normalizedPath}`, {
     ...rest,
     headers: nextHeaders,
   });

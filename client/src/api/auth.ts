@@ -1,3 +1,6 @@
+import { API_V1_BASE } from './config';
+import { parseApiError } from './client';
+
 export type PublicUser = {
   id: string;
   name: string;
@@ -11,30 +14,19 @@ export type AuthResponse = {
   user: PublicUser;
 };
 
-const API_BASE = '/api/v1';
-
-async function parseError(response: Response): Promise<string> {
-  try {
-    const data = (await response.json()) as { error?: string };
-    return data.error ?? 'Something went wrong';
-  } catch {
-    return 'Something went wrong';
-  }
-}
-
 export async function registerUser(input: {
   name: string;
   email: string;
   password: string;
 }): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE}/auth/register`, {
+  const response = await fetch(`${API_V1_BASE}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
 
   if (!response.ok) {
-    throw new Error(await parseError(response));
+    throw new Error(await parseApiError(response));
   }
 
   return response.json() as Promise<AuthResponse>;
@@ -44,26 +36,26 @@ export async function loginUser(input: {
   email: string;
   password: string;
 }): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE}/auth/login`, {
+  const response = await fetch(`${API_V1_BASE}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
 
   if (!response.ok) {
-    throw new Error(await parseError(response));
+    throw new Error(await parseApiError(response));
   }
 
   return response.json() as Promise<AuthResponse>;
 }
 
 export async function fetchCurrentUser(token: string): Promise<PublicUser> {
-  const response = await fetch(`${API_BASE}/auth/me`, {
+  const response = await fetch(`${API_V1_BASE}/auth/me`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
   if (!response.ok) {
-    throw new Error(await parseError(response));
+    throw new Error(await parseApiError(response));
   }
 
   const data = (await response.json()) as { user: PublicUser };
