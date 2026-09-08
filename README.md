@@ -4,12 +4,12 @@ A Splitwise-style expense tracker for housemates and shared households. Create g
 
 ## Tech stack
 
-| Layer | Stack |
-| --- | --- |
-| Client | React, TypeScript, Vite, Tailwind CSS, React Router |
-| Server | Node.js, Express, TypeScript, Prisma ORM |
-| Database | PostgreSQL |
-| Tooling | npm workspaces, concurrently, ESLint, Prettier |
+| Layer    | Stack                                               |
+| -------- | --------------------------------------------------- |
+| Client   | React, TypeScript, Vite, Tailwind CSS, React Router |
+| Server   | Node.js, Express, TypeScript, Prisma ORM            |
+| Database | PostgreSQL                                          |
+| Tooling  | npm workspaces, concurrently, ESLint, Prettier      |
 
 ## Features
 
@@ -79,13 +79,13 @@ Suggested placements:
 
 ### Useful scripts
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Run client and server with hot reload |
-| `npm run build` | Production build for client and server |
-| `npm run lint` | Lint client and server |
-| `npm run format` | Format with Prettier |
-| `npm run test -w server` | Run server unit tests |
+| Command                  | Description                            |
+| ------------------------ | -------------------------------------- |
+| `npm run dev`            | Run client and server with hot reload  |
+| `npm run build`          | Production build for client and server |
+| `npm run lint`           | Lint client and server                 |
+| `npm run format`         | Format with Prettier                   |
+| `npm run test -w server` | Run server unit tests                  |
 
 ## Project structure
 
@@ -101,11 +101,11 @@ Suggested placements:
 
 Terraform under `/infra` manages:
 
-| Managed by Terraform | Still manual (not Terraform-managed) |
-| --- | --- |
-| Vercel frontend project (Vite app in `client/`, GitHub auto-deploys) | **Render backend** at `https://split-tracker-0uxz.onrender.com` |
-| Neon PostgreSQL project + connection string | Wiring `DATABASE_URL` / `JWT_SECRET` (and friends) into Render |
-| `VITE_API_URL` on the Vercel project (defaults to the Render URL above) | Re-creating or reconfiguring the Render web service itself |
+| Managed by Terraform                                                    | Still manual (not Terraform-managed)                            |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Vercel frontend project (Vite app in `client/`, GitHub auto-deploys)    | **Render backend** at `https://split-tracker-0uxz.onrender.com` |
+| Neon PostgreSQL project + connection string                             | Wiring `DATABASE_URL` / `JWT_SECRET` (and friends) into Render  |
+| `VITE_API_URL` on the Vercel project (defaults to the Render URL above) | Re-creating or reconfiguring the Render web service itself      |
 
 ### Apply from `/infra`
 
@@ -155,6 +155,7 @@ The Express API is **not** managed by Terraform. To create or redeploy it on Ren
    ```
 
    For production-style deploys, prefer `npx prisma migrate deploy` in the `server` workspace once migrations are committed.
+
 5. Trigger a deploy (push to the connected branch, or **Manual Deploy** in Render). Confirm health at `https://split-tracker-0uxz.onrender.com/api/v1/health`.
 
 ## Future Work
